@@ -5,54 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Eventos</title>
     <link rel="stylesheet" href="styles.css" />
+    <!-- Firebase App (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <!-- Firebase Firestore (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   </head>
   <body>
     <div class="card">
       <h1>BIENVENIDO</h1>
     </div>
+
     <div class="cartitas">
       <h2>¿A QUÉ EVENTO DESEAS ASISTIR?</h2>
+
       <div class="cartita_1">
         <h1>CONCIERTO MALUMA</h1>
-        <form method="post">
-          <div class="username">
-            <input
-              type="text"
-              placeholder="Introduzca su nombre"
-              id="nombreMal"
-            />
-          </div>
-          <div class="email">
-            <input
-              type="email"
-              placeholder="Introduzca su email"
-              id="emailMal"
-            />
-          </div>
-          <button id="btnMaluma">Registrarse</button>
+        <form id="formMaluma">
+          <input
+            type="text"
+            placeholder="Introduzca su nombre"
+            id="nombreMal"
+            required
+          />
+          <input
+            type="email"
+            placeholder="Introduzca su email"
+            id="emailMal"
+            required
+          />
+          <button type="submit">Registrarse</button>
         </form>
       </div>
+
       <div class="cartita_2">
         <h1>CONCIERTO SHAKIRA</h1>
-        <form method="post">
-          <div class="username">
-            <input
-              type="text"
-              placeholder="Introduzca su nombre"
-              id="nombreSh"
-            />
-          </div>
-          <div class="email">
-            <input
-              type="email"
-              placeholder="Introduzca su email"
-              id="emailSh"
-            />
-          </div>
-          <button id="btnShakira">Registrarse</button>
+        <form id="formShakira">
+          <input
+            type="text"
+            placeholder="Introduzca su nombre"
+            id="nombreSh"
+            required
+          />
+          <input
+            type="email"
+            placeholder="Introduzca su email"
+            id="emailSh"
+            required
+          />
+          <button type="submit">Registrarse</button>
         </form>
       </div>
     </div>
-    <script src="main.js"></script>
+
+    <script>
+      // Configurar Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyCOyrP4SrRm4iYwP5tohhQz5aU5xLyZ-oU",
+        authDomain: "proyecteventssem8.firebaseapp.com",
+        projectId: "proyecteventssem8",
+        storageBucket: "proyecteventssem8.firebasestorage.app",
+        messagingSenderId: "172885191069",
+        appId: "1:172885191069:web:fcee66a82570c4f2bca774",
+        measurementId: "G-KSJEFJTTVJ",
+      };
+
+      // Inicializar Firebase
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
+      // Función para registrar
+      async function registrarAsistente(nombre, correo, concierto) {
+        try {
+          const coleccion =
+            concierto === "maluma" ? "maluma_registros" : "shakira_registros";
+          await db.collection(coleccion).add({
+            nombre: nombre,
+            correo: correo,
+            fecha: new Date().toISOString(),
+          });
+          alert(
+            `¡Te has registrado al concierto de ${concierto.toUpperCase()} exitosamente!`
+          );
+        } catch (error) {
+          console.error("Error al registrar:", error);
+          alert("Hubo un problema. Intenta nuevamente.");
+        }
+      }
+
+      // Manejo de formularios
+      document
+        .getElementById("formMaluma")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const nombre = document.getElementById("nombreMal").value.trim();
+          const correo = document.getElementById("emailMal").value.trim();
+          if (nombre && correo) {
+            registrarAsistente(nombre, correo, "maluma");
+            this.reset();
+          }
+        });
+
+      document
+        .getElementById("formShakira")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const nombre = document.getElementById("nombreSh").value.trim();
+          const correo = document.getElementById("emailSh").value.trim();
+          if (nombre && correo) {
+            registrarAsistente(nombre, correo, "shakira");
+            this.reset();
+          }
+        });
+    </script>
   </body>
 </html>
